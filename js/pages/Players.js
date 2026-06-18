@@ -12,11 +12,17 @@ export function renderPlayers(container) {
     const buildSkillSelects = (prefix, player = null) => `
         <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 space-y-3">
             <h4 class="text-xs font-semibold text-slate-300 border-b border-slate-700 pb-1">Nível Técnico</h4>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-2">
                 <div>
                     <label class="block text-slate-400 mb-1 text-[10px]">Passe</label>
                     <select id="${prefix}-pass" class="input-field py-1 px-2 text-xs">
                         ${rateOptions.map(r => `<option value="${r}" ${player && Number(player.pass) === r ? 'selected' : ''}>${r}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 text-[10px]">Drible</label>
+                    <select id="${prefix}-dribble" class="input-field py-1 px-2 text-xs">
+                        ${rateOptions.map(r => `<option value="${r}" ${player && Number(player.dribble ?? 3) === r ? 'selected' : ''}>${r}</option>`).join('')}
                     </select>
                 </div>
                 <div>
@@ -186,15 +192,16 @@ export function renderPlayers(container) {
             const pass = document.getElementById('p-pass').value;
             const vision = document.getElementById('p-vision').value;
             const finish = document.getElementById('p-finish').value;
+            const dribble = document.getElementById('p-dribble').value;
             const energy = document.getElementById('p-energy').value;
             const stamina = document.getElementById('p-stamina').value;
-            const totalScore = calculatePlayerScore(pass, vision, finish, energy, stamina);
+            const totalScore = calculatePlayerScore(pass, vision, finish, dribble, energy, stamina);
 
             const player = {
                 name: document.getElementById('p-name').value.trim(),
                 pos1: document.getElementById('p-pos1').value,
                 pos2: document.getElementById('p-pos2').value,
-                pass, vision, finish, energy, stamina, totalScore
+                pass, vision, finish, dribble, energy, stamina, totalScore
             };
 
             store.addPlayer(player);
@@ -231,15 +238,16 @@ export function renderPlayers(container) {
                 const pass = document.getElementById(`edit-${id}-pass`).value;
                 const vision = document.getElementById(`edit-${id}-vision`).value;
                 const finish = document.getElementById(`edit-${id}-finish`).value;
+                const dribble = document.getElementById(`edit-${id}-dribble`).value;
                 const energy = document.getElementById(`edit-${id}-energy`).value;
                 const stamina = document.getElementById(`edit-${id}-stamina`).value;
-                const totalScore = calculatePlayerScore(pass, vision, finish, energy, stamina);
+                const totalScore = calculatePlayerScore(pass, vision, finish, dribble, energy, stamina);
 
                 const updated = {
                     name: document.getElementById(`edit-name-${id}`).value.trim(),
                     pos1: document.getElementById(`edit-pos1-${id}`).value,
                     pos2: document.getElementById(`edit-pos2-${id}`).value,
-                    pass, vision, finish, energy, stamina, totalScore
+                    pass, vision, finish, dribble, energy, stamina, totalScore
                 };
 
                 store.updatePlayer(id, updated);

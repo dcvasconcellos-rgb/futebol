@@ -16,6 +16,7 @@ function mapPlayer(row) {
         pass:       Number(row.pass),
         vision:     Number(row.vision),
         finish:     Number(row.finish),
+        dribble:    Number(row.dribble ?? 3),
         energy:     Number(row.energy),
         stamina:    Number(row.stamina),
         totalScore: Number(row.total_score)
@@ -31,6 +32,7 @@ function unmapPlayer(p) {
         pass:        p.pass,
         vision:      p.vision,
         finish:      p.finish,
+        dribble:     p.dribble,
         energy:      p.energy,
         stamina:     p.stamina,
         total_score: p.totalScore
