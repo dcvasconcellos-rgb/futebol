@@ -13,7 +13,8 @@ const INITIAL_DATA = {
     finances: {
         transactions: [] // { id, type: 'in'|'out', amount, date, description, category }
     },
-    players: [] // { id, name, pos1, pos2, pass, vision, finish, energy, stamina, totalScore }
+    players: [], // { id, name, pos1, pos2, pass, vision, finish, energy, stamina, totalScore }
+    drawHistory: [] // last 4 draws: each draw is an array of teams (each team is an array of player ids)
 };
 
 export const store = {
@@ -23,16 +24,21 @@ export const store = {
         const stored = localStorage.getItem('futmanager_data');
         if (stored) {
             this.data = JSON.parse(stored);
+            // Ensure drawHistory exists for older data versions
+            if (!this.data.drawHistory) {
+                this.data.drawHistory = [];
+                this.save();
+            }
         } else {
             this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
             this.save();
         }
     },
 
-    save() {
+    save(silent = false) {
         localStorage.setItem('futmanager_data', JSON.stringify(this.data));
         // Simple event emitter pattern for reactivity
-        window.dispatchEvent(new CustomEvent('store-updated'));
+        if (!silent) window.dispatchEvent(new CustomEvent('store-updated'));
     },
 
     getUser() { return this.data.user; },
@@ -95,6 +101,23 @@ export const store = {
     },
     deletePlayer(id) {
         this.data.players = this.data.players.filter(p => p.id !== id);
+        this.save();
+    },
+
+    // Draw history: store last 4 draws to avoid repeated teams
+    // Each draw is stored as: { date, teams: [[playerId, ...], ...] }
+    getDrawHistory() { return this.data.drawHistory || []; },
+    addDraw(teamsOfIds) {
+        if (!this.data.drawHistory) this.data.drawHistory = [];
+        this.data.drawHistory.push({ date: new Date().toISOString(), teams: teamsOfIds });
+        // Keep only last 4
+        if (this.data.drawHistory.length > 4) {
+            this.data.drawHistory = this.data.drawHistory.slice(-4);
+        }
+        this.save(true); // silent: don't trigger re-render (would clear draw results)
+    },
+    clearDrawHistory() {
+        this.data.drawHistory = [];
         this.save();
     }
 };
